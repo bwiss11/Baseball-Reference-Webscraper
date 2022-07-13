@@ -127,7 +127,7 @@ def dates_without_days_compiler():
 
 def teams_df_creator():
     '''Creates the teams_df which contains the home and away teams for each game'''
-    # Uses parsing function and puts the Python strings into a list, than a flattened list,
+    # Uses parsing function and puts the Python strings into a list, then a flattened list,
     # then converts full names to abbreviations
     # Then cuts out the "Preview" column that BBRef provides for games.
     # Then puts teams into a DataFrame.
@@ -233,10 +233,10 @@ def postponement_checker(day, month):
     return postponed_list
 
 
-def postponed_popup(passed_list):
+def postponed_popup(passed_list, passed_day):
     '''Notifies the user via popup window if there are postponed games rescheduled for the next day'''
     if len(passed_list) == 1:
-        sg.Popup('Postponed Games Rescheduled for the Next Day:', passed_list[0], title='Postponed Games',
+        sg.Popup('Postponed Games Rescheduled for ' + passed_day +':', passed_list[0], title='Postponed Games',
                  font=('Arial', '14'))
     if len(passed_list) == 2:
         sg.Popup('Postponed Games Rescheduled for the Next Day:', passed_list[0], passed_list[1],
@@ -375,7 +375,7 @@ if event == "Today's Schedule":
     month = int(yesterday_date.strftime('%-m'))
     day = int(yesterday_date.strftime('%-d'))
     postponed_list = postponement_checker(day, month)
-    postponed_popup(postponed_list)
+    postponed_popup(postponed_list, "Today")
 
 
 
@@ -431,11 +431,11 @@ elif event == "Tomorrow's Schedule":
     print('\nTitle of table on Baseball Reference: ' + date_of_table_str + '\n')
     full_df.to_clipboard()
     # Runs the postponement checker and notifies the user if there are any postponed games rescheduled for the next day
-    tomorrow_date = datetime.date.today() + datetime.timedelta(days=1)
-    month = int(tomorrow_date.strftime('%-m'))
-    day = int(tomorrow_date.strftime('%-d'))
+    today_date = datetime.date.today()
+    month = int(today_date.strftime('%-m'))
+    day = int(today_date.strftime('%-d'))
     postponed_list = postponement_checker(day, month)
-    postponed_popup(postponed_list)
+    postponed_popup(postponed_list, "Tomorrow")
 
 
 
@@ -516,10 +516,14 @@ elif event == "Submit Schedule Request":
     print('\nTitle of table on Baseball Reference: ' + date_of_table_str + '\n')
     full_df.to_clipboard()
     # Runs the postponement checker and notifies the user if there are any postponed games rescheduled for the next day
+    days_per_month = {1: 31, 2: 28, 3: 31, 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31}
     month = int(values['Month Schedule'])
-    day = int(values['Day Schedule'])
+    day = int(values['Day Schedule']) - 1
+    if day == 0:
+        month -= 1
+        day = days_per_month[month]
     postponed_list = postponement_checker(day, month)
-    postponed_popup(postponed_list)
+    postponed_popup(postponed_list, "This Day")
 
 
 ### SCORES SECTION
