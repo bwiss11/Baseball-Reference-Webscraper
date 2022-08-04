@@ -169,7 +169,7 @@ def table_date():
 
 
 def postponement_checker(day, month):
-    '''Cunction that checks with ESPN to make sure BBRef isn't missing any game's from the day before that got postponed to the date of interest'''
+    '''Function that checks with ESPN to make sure BBRef isn't missing any game's from the day before that got postponed to the date of interest'''
     # Helper dictionaries for team names and days per month
     ESPN_abbr_dict = {'Boston': 'BOS', 'Baltimore': 'BAL', 'Tampa Bay': 'TBR', 'Toronto': 'TOR', 'New York': 'NY',
                       'Chicago': 'CH', 'Kansas City': 'KCR', 'Detroit': 'DET', 'Minnesota': 'MIN', 'Cleveland': 'CLE',
@@ -186,6 +186,8 @@ def postponement_checker(day, month):
     # Sets the date that will be used in the link to the ESPN page for the next day
     month_object = datetime.datetime.strptime(str(month), "%m")
     month_name = month_object.strftime("%B")
+    if len(month_name) > 4:
+        month_name = month_object.strftime("%b")
     next_day = day + 1
     if next_day > days_per_month[month]:
         next_day = 1
@@ -209,6 +211,8 @@ def postponement_checker(day, month):
     if next_day == 1:
         month_object = datetime.datetime.strptime(str(month + 1), "%m")
         month_name = month_object.strftime("%B")
+        if len(month_name) > 4:
+            month_name = month_object.strftime("%b")
     # Goes to ESPN's schedule for the given date and creates a BeautifulSoup object.
     response = requests.get('https://www.espn.com/mlb/scoreboard/_/date/' + date)
     soup = BeautifulSoup(response.text, features="html.parser")
